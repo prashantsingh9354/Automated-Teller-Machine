@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useATM } from '../hooks/useATM';
 import { ATMScreen } from './ATMScreen';
@@ -17,6 +16,7 @@ export const ATMInterface: React.FC = () => {
     newPin,
     confirmPin,
     setCurrentScreen,
+    setCurrentAccount,
     setEnteredCardNumber,
     setEnteredPin,
     setWithdrawalAmount,
@@ -34,6 +34,7 @@ export const ATMInterface: React.FC = () => {
   const handleLogin = () => {
     const account = authenticateUser(enteredCardNumber, enteredPin);
     if (account) {
+      setCurrentAccount(account); // Fix: Properly set the current account with full data
       addTransaction({
         accountId: account.id,
         type: 'balance_inquiry',
@@ -78,7 +79,7 @@ export const ATMInterface: React.FC = () => {
     
     if (holderName && initialPin && initialPin.length === 4 && /^\d+$/.test(initialPin)) {
       const newAccount = createAccount(holderName, initialPin);
-      alert(`Account created successfully!\nCard Number: ${newAccount.cardNumber}\nInitial Balance: $${newAccount.balance}`);
+      alert(`Account created successfully!\n\nCard Number: ${newAccount.cardNumber}\nInitial Balance: $${newAccount.balance.toFixed(2)}\n\nPlease note down your card number for future logins.`);
       setCurrentScreen('welcome');
     } else {
       alert('Please provide valid information. PIN must be 4 digits.');
@@ -92,25 +93,36 @@ export const ATMInterface: React.FC = () => {
           <ATMScreen title="WELCOME TO VIRTUAL ATM">
             <div className="text-center space-y-6">
               <div className="mb-8">
-                <CreditCard size={64} className="mx-auto text-green-400 mb-4" />
-                <p className="text-green-300 text-lg">Please select an option to continue</p>
+                <CreditCard size={64} className="mx-auto text-green-400 mb-4 animate-pulse" />
+                <p className="text-green-300 text-lg">Your Digital Banking Solution</p>
+                <p className="text-green-600 text-sm mt-2">Secure • Fast • Reliable</p>
               </div>
               
               <div className="space-y-4">
                 <ATMButton 
                   onClick={() => setCurrentScreen('insert_card')}
-                  className="w-full"
+                  className="w-full text-lg py-4"
                 >
-                  INSERT CARD / LOGIN
+                  🏧 INSERT CARD / LOGIN
                 </ATMButton>
                 
                 <ATMButton 
                   onClick={() => setCurrentScreen('create_account')}
                   variant="secondary"
-                  className="w-full"
+                  className="w-full text-lg py-4"
                 >
-                  CREATE NEW ACCOUNT
+                  ➕ CREATE NEW ACCOUNT
                 </ATMButton>
+              </div>
+
+              <div className="mt-8 p-4 bg-gray-800 rounded-lg border border-green-500/30">
+                <h3 className="text-green-300 font-semibold mb-2">Demo Features:</h3>
+                <div className="text-green-600 text-sm space-y-1">
+                  <p>• Account Creation with $1,000 starting balance</p>
+                  <p>• Cash Withdrawal & Balance Inquiry</p>
+                  <p>• PIN Change & Transaction History</p>
+                  <p>• Secure Authentication System</p>
+                </div>
               </div>
             </div>
           </ATMScreen>
@@ -121,14 +133,17 @@ export const ATMInterface: React.FC = () => {
           <ATMScreen title="CREATE NEW ACCOUNT">
             <div className="text-center space-y-6">
               <User size={48} className="mx-auto text-green-400 mb-4" />
-              <p className="text-green-300">Create a new bank account with us</p>
+              <div className="bg-gray-800 p-4 rounded-lg border border-green-500/30">
+                <p className="text-green-300 text-lg mb-2">Start Your Banking Journey</p>
+                <p className="text-green-600 text-sm">Get $1,000 starting balance with your new account!</p>
+              </div>
               
               <div className="space-y-4">
                 <ATMButton 
                   onClick={handleCreateAccount}
-                  className="w-full"
+                  className="w-full text-lg py-4"
                 >
-                  CREATE ACCOUNT
+                  🆕 CREATE ACCOUNT
                 </ATMButton>
                 
                 <ATMButton 
@@ -150,12 +165,13 @@ export const ATMInterface: React.FC = () => {
             <div className="space-y-6">
               <div className="text-center mb-6">
                 <CreditCard size={48} className="mx-auto text-green-400 mb-4" />
-                <p className="text-green-300">Enter your card details</p>
+                <p className="text-green-300">Enter your 16-digit card number</p>
+                <p className="text-green-600 text-sm mt-1">Numbers will be automatically formatted</p>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-green-300 mb-2">Card Number:</label>
+                  <label className="block text-green-300 mb-2 font-semibold">Card Number:</label>
                   <CardNumberInput
                     value={enteredCardNumber}
                     onChange={setEnteredCardNumber}
@@ -167,7 +183,7 @@ export const ATMInterface: React.FC = () => {
                   disabled={enteredCardNumber.length !== 16}
                   className="w-full"
                 >
-                  CONTINUE
+                  CONTINUE ➡️
                 </ATMButton>
                 
                 <ATMButton 
@@ -190,6 +206,7 @@ export const ATMInterface: React.FC = () => {
               <div className="text-center mb-6">
                 <Lock size={48} className="mx-auto text-green-400 mb-4" />
                 <p className="text-green-300">Enter your 4-digit PIN</p>
+                <p className="text-green-600 text-sm mt-1">Your PIN is encrypted and secure</p>
               </div>
               
               <PinInput
@@ -203,7 +220,7 @@ export const ATMInterface: React.FC = () => {
                   disabled={enteredPin.length !== 4}
                   className="w-full"
                 >
-                  LOGIN
+                  🔐 LOGIN
                 </ATMButton>
                 
                 <ATMButton 
@@ -226,9 +243,10 @@ export const ATMInterface: React.FC = () => {
         return (
           <ATMScreen title="MAIN MENU">
             <div className="space-y-6">
-              <div className="text-center mb-6">
-                <p className="text-green-300 text-lg">Welcome, {currentAccount?.holderName}</p>
+              <div className="text-center mb-6 bg-gray-800 p-4 rounded-lg border border-green-500/30">
+                <p className="text-green-300 text-lg">Welcome back, {currentAccount?.holderName}!</p>
                 <p className="text-green-400 text-sm">Card: ****{currentAccount?.cardNumber.slice(-4)}</p>
+                <p className="text-green-500 text-lg font-bold mt-2">Balance: ${currentAccount?.balance.toFixed(2)}</p>
               </div>
               
               <div className="grid grid-cols-1 gap-4">
@@ -237,14 +255,14 @@ export const ATMInterface: React.FC = () => {
                   className="w-full"
                 >
                   <DollarSign size={16} className="mr-2" />
-                  BALANCE INQUIRY
+                  💰 BALANCE INQUIRY
                 </ATMButton>
                 
                 <ATMButton 
                   onClick={() => setCurrentScreen('cash_withdrawal')}
                   className="w-full"
                 >
-                  CASH WITHDRAWAL
+                  💵 CASH WITHDRAWAL
                 </ATMButton>
                 
                 <ATMButton 
@@ -252,7 +270,7 @@ export const ATMInterface: React.FC = () => {
                   className="w-full"
                 >
                   <Lock size={16} className="mr-2" />
-                  CHANGE PIN
+                  🔒 CHANGE PIN
                 </ATMButton>
                 
                 <ATMButton 
@@ -261,7 +279,7 @@ export const ATMInterface: React.FC = () => {
                   className="w-full"
                 >
                   <History size={16} className="mr-2" />
-                  TRANSACTION HISTORY
+                  📋 TRANSACTION HISTORY
                 </ATMButton>
                 
                 <ATMButton 
@@ -269,7 +287,7 @@ export const ATMInterface: React.FC = () => {
                   variant="danger"
                   className="w-full"
                 >
-                  LOG OUT
+                  🚪 LOG OUT
                 </ATMButton>
               </div>
             </div>
@@ -284,8 +302,14 @@ export const ATMInterface: React.FC = () => {
               
               <div className="bg-gray-800 p-6 rounded-lg border border-green-500/30">
                 <p className="text-green-300 text-lg mb-2">Current Balance</p>
-                <p className="text-green-400 text-3xl font-bold">
+                <p className="text-green-400 text-4xl font-bold">
                   ${currentAccount?.balance.toFixed(2)}
+                </p>
+                <p className="text-green-600 text-sm mt-2">
+                  Account: {currentAccount?.holderName}
+                </p>
+                <p className="text-green-600 text-sm">
+                  Card: ****{currentAccount?.cardNumber.slice(-4)}
                 </p>
               </div>
               
@@ -300,16 +324,18 @@ export const ATMInterface: React.FC = () => {
           </ATMScreen>
         );
 
+      
       case 'cash_withdrawal':
         return (
           <ATMScreen title="CASH WITHDRAWAL">
             <div className="space-y-6">
-              <div className="text-center mb-6">
-                <p className="text-green-300">Current Balance: ${currentAccount?.balance.toFixed(2)}</p>
+              <div className="text-center mb-6 bg-gray-800 p-4 rounded-lg border border-green-500/30">
+                <p className="text-green-300">Available Balance</p>
+                <p className="text-green-400 text-2xl font-bold">${currentAccount?.balance.toFixed(2)}</p>
               </div>
               
               <div>
-                <label className="block text-green-300 mb-2">Withdrawal Amount:</label>
+                <label className="block text-green-300 mb-2 font-semibold">Withdrawal Amount:</label>
                 <input
                   type="number"
                   value={withdrawalAmount}
@@ -340,7 +366,7 @@ export const ATMInterface: React.FC = () => {
                   disabled={!withdrawalAmount || parseFloat(withdrawalAmount) <= 0}
                   className="w-full"
                 >
-                  WITHDRAW CASH
+                  💵 WITHDRAW CASH
                 </ATMButton>
                 
                 <ATMButton 
@@ -366,11 +392,12 @@ export const ATMInterface: React.FC = () => {
               <div className="text-center mb-6">
                 <Lock size={48} className="mx-auto text-green-400 mb-4" />
                 <p className="text-green-300">Create a new 4-digit PIN</p>
+                <p className="text-green-600 text-sm mt-1">Make sure it's something you'll remember</p>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-green-300 mb-2">New PIN:</label>
+                  <label className="block text-green-300 mb-2 font-semibold">New PIN:</label>
                   <PinInput
                     value={newPin}
                     onChange={setNewPin}
@@ -379,7 +406,7 @@ export const ATMInterface: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-green-300 mb-2">Confirm PIN:</label>
+                  <label className="block text-green-300 mb-2 font-semibold">Confirm PIN:</label>
                   <PinInput
                     value={confirmPin}
                     onChange={setConfirmPin}
@@ -394,7 +421,7 @@ export const ATMInterface: React.FC = () => {
                   disabled={newPin.length !== 4 || confirmPin.length !== 4 || newPin !== confirmPin}
                   className="w-full"
                 >
-                  CHANGE PIN
+                  🔒 CHANGE PIN
                 </ATMButton>
                 
                 <ATMButton 
@@ -421,10 +448,14 @@ export const ATMInterface: React.FC = () => {
             <div className="space-y-6">
               <div className="max-h-80 overflow-y-auto space-y-3">
                 {transactions.length === 0 ? (
-                  <p className="text-green-300 text-center">No transactions found</p>
+                  <div className="text-center py-8">
+                    <History size={48} className="mx-auto text-green-600 mb-4" />
+                    <p className="text-green-300">No transactions found</p>
+                    <p className="text-green-600 text-sm">Your transaction history will appear here</p>
+                  </div>
                 ) : (
                   transactions.slice(0, 10).map((transaction) => (
-                    <div key={transaction.id} className="bg-gray-800 p-4 rounded border border-green-500/30">
+                    <div key={transaction.id} className="bg-gray-800 p-4 rounded border border-green-500/30 hover:border-green-500/50 transition-colors">
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-green-400 font-semibold">{transaction.description}</p>
@@ -433,7 +464,7 @@ export const ATMInterface: React.FC = () => {
                           </p>
                         </div>
                         {transaction.amount && (
-                          <p className={`font-bold ${
+                          <p className={`font-bold text-lg ${
                             transaction.type === 'withdrawal' ? 'text-red-400' : 'text-green-400'
                           }`}>
                             {transaction.type === 'withdrawal' ? '-' : '+'}${transaction.amount.toFixed(2)}
@@ -472,15 +503,20 @@ export const ATMInterface: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-900 to-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-green-400 mb-2 font-mono">VIRTUAL ATM</h1>
-          <p className="text-green-600 text-sm">Secure Banking System</p>
+          <h1 className="text-4xl font-bold text-green-400 mb-2 font-mono">🏧 VIRTUAL ATM</h1>
+          <p className="text-green-600 text-sm">Secure Banking System v2.0</p>
+          <div className="mt-2 flex justify-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+          </div>
         </div>
         
         {renderScreen()}
         
         <div className="mt-6 text-center">
           <p className="text-gray-600 text-xs font-mono">
-            © 2024 Virtual Bank - Simulation Only
+            © 2024 Virtual Bank - Simulation Only | Secure & Encrypted
           </p>
         </div>
       </div>

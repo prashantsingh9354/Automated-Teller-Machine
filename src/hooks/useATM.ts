@@ -165,6 +165,7 @@ export const useATM = () => {
     
     // Actions
     setCurrentScreen,
+    setCurrentAccount, // Added this missing function
     setEnteredCardNumber,
     setEnteredPin,
     setWithdrawalAmount,
