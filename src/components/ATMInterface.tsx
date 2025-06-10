@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useATM } from '../hooks/useATM';
 import { ATMScreen } from './ATMScreen';
 import { ATMButton } from './ATMButton';
 import { PinInput } from './PinInput';
 import { CardNumberInput } from './CardNumberInput';
-import { CreditCard, ArrowLeft, DollarSign, Lock, History, User } from 'lucide-react';
+import { CreditCard, ArrowLeft, DollarSign, Lock, History, User, Eye, EyeOff } from 'lucide-react';
 
 export const ATMInterface: React.FC = () => {
+  const [showFullCardNumber, setShowFullCardNumber] = useState(false);
+
   const {
     currentScreen,
     currentAccount,
@@ -245,7 +247,17 @@ export const ATMInterface: React.FC = () => {
             <div className="space-y-6">
               <div className="text-center mb-6 bg-gray-800 p-4 rounded-lg border border-green-500/30">
                 <p className="text-green-300 text-lg">Welcome back, {currentAccount?.holderName}!</p>
-                <p className="text-green-400 text-sm">Card: ****{currentAccount?.cardNumber.slice(-4)}</p>
+                <div className="flex items-center justify-center gap-2 mt-1">
+                  <p className="text-green-400 text-sm">
+                    Card: {showFullCardNumber ? currentAccount?.cardNumber : `****${currentAccount?.cardNumber.slice(-4)}`}
+                  </p>
+                  <button
+                    onClick={() => setShowFullCardNumber(!showFullCardNumber)}
+                    className="text-green-400 hover:text-green-300 transition-colors"
+                  >
+                    {showFullCardNumber ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
                 <p className="text-green-500 text-lg font-bold mt-2">Balance: ${currentAccount?.balance.toFixed(2)}</p>
               </div>
               
@@ -308,9 +320,17 @@ export const ATMInterface: React.FC = () => {
                 <p className="text-green-600 text-sm mt-2">
                   Account: {currentAccount?.holderName}
                 </p>
-                <p className="text-green-600 text-sm">
-                  Card: ****{currentAccount?.cardNumber.slice(-4)}
-                </p>
+                <div className="flex items-center justify-center gap-2 mt-1">
+                  <p className="text-green-600 text-sm">
+                    Card: {showFullCardNumber ? currentAccount?.cardNumber : `****${currentAccount?.cardNumber.slice(-4)}`}
+                  </p>
+                  <button
+                    onClick={() => setShowFullCardNumber(!showFullCardNumber)}
+                    className="text-green-400 hover:text-green-300 transition-colors"
+                  >
+                    {showFullCardNumber ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
               </div>
               
               <ATMButton 
@@ -324,7 +344,6 @@ export const ATMInterface: React.FC = () => {
           </ATMScreen>
         );
 
-      
       case 'cash_withdrawal':
         return (
           <ATMScreen title="CASH WITHDRAWAL">
