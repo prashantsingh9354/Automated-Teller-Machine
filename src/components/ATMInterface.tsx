@@ -523,7 +523,7 @@ export const ATMInterface: React.FC = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <h1 className="text-4xl font-bold text-green-400 mb-2 font-mono">🏧 VIRTUAL ATM</h1>
-          <p className="text-green-600 text-sm">Secure Banking System v2.0</p>
+          <p className="text-green-600 text-sm">Secure Banking System </p>
           <div className="mt-2 flex justify-center space-x-2">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
@@ -535,7 +535,7 @@ export const ATMInterface: React.FC = () => {
         
         <div className="mt-6 text-center">
           <p className="text-gray-600 text-xs font-mono">
-            © 2024 Virtual Bank - Simulation Only | Secure & Encrypted
+            © 2025 Virtual Bank - Simulation Only | Secure & Encrypted
           </p>
         </div>
       </div>
