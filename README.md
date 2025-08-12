@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/e84e90d3-0a67-4f70-b913-b2c389375883
+**URL**: https://automated-teller-machine.vercel.app/
 
 ## How can I edit this code?
 
